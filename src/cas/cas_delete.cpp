@@ -9,16 +9,30 @@
 
 
 template<class VType>
-cas::CasDelete<VType>::CasDelete(cas::Node** root, const cas::BinaryKey& key)
-  : root_(root)
+cas::CasDelete<VType>::CasDelete(
+        cas::Node** root_main,
+        cas::Node** root_auxiliary,
+        const cas::BinaryKey& key)
+  : root_main_(root_main)
+  , root_auxiliary_(root_auxiliary)
   , key_(key)
 { }
 
 
 template<class VType>
 bool cas::CasDelete<VType>::Execute() {
+  bool success = Execute(root_main_);
+  if (!success) {
+    success = Execute(root_auxiliary_);
+  }
+  return success;
+}
+
+
+template<class VType>
+bool cas::CasDelete<VType>::Execute(cas::Node** root) {
   // look for th eleaf that needs to be deleted
-  bool found = Traverse();
+  bool found = Traverse(root);
   if (!found) {
     return false;
   }
@@ -34,8 +48,8 @@ bool cas::CasDelete<VType>::Execute() {
 
   // Case *: check if the leaf to be deleted is the root node
   if (parent_ == nullptr) {
-    delete *root_;
-    *root_ = nullptr;
+    delete *root;
+    *root = nullptr;
     return true;
   }
 
@@ -52,7 +66,7 @@ bool cas::CasDelete<VType>::Execute() {
       if (grand_parent_ == nullptr) {
         // the parent is the root node, hence we need to replace
         // the root node
-        *root_ = new_parent;
+        *root = new_parent;
       } else {
         // we replace the parent in the grand_parent_'s list of children
         // with the new_parent node
@@ -65,8 +79,8 @@ bool cas::CasDelete<VType>::Execute() {
 
   // Case 3: this is the difficult case; parent_ has only one child left
   // and these two nodes can be merged
-  StrictDeletion();
-  /* LazyDeletion(); */
+  StrictDeletion(root);
+  /* LazyDeletion(root); */
   return true;
 }
 
@@ -74,7 +88,7 @@ bool cas::CasDelete<VType>::Execute() {
 // this method merges node parent_ with its only remaining
 // child node in a lazy way
 template<class VType>
-void cas::CasDelete<VType>::LazyDeletion() {
+void cas::CasDelete<VType>::LazyDeletion(cas::Node** root) {
   auto key_bytes = parent_->GetKeys();
   assert(key_bytes.size() == 1);
   uint8_t next_byte = key_bytes[0];
@@ -118,7 +132,7 @@ void cas::CasDelete<VType>::LazyDeletion() {
   // the grand_parent_'s list of children
   if (grand_parent_ == nullptr) {
     // parent_ was the root node, now child becomes the root node
-    *root_ = child;
+    *root = child;
   } else {
     grand_parent_->ReplaceBytePointer(grand_parent_byte_, child);
   }
@@ -129,7 +143,7 @@ void cas::CasDelete<VType>::LazyDeletion() {
 // this method merges node parent_ with its only remaining
 // child node in a lazy way
 template<class VType>
-void cas::CasDelete<VType>::StrictDeletion() {
+void cas::CasDelete<VType>::StrictDeletion(cas::Node** root) {
   struct PartialKey {
     cas::Node* node_;
     std::vector<uint8_t> path_;
@@ -208,7 +222,7 @@ void cas::CasDelete<VType>::StrictDeletion() {
   // install new_parent in the tree
   if (grand_parent_ == nullptr) {
     // parent_ is the root node
-    *root_ = new_parent;
+    *root = new_parent;
   } else {
     // replace parent_ with new_parent in grand_parent_'s
     // list of children
@@ -231,8 +245,8 @@ void cas::CasDelete<VType>::StrictDeletion() {
 
 
 template<class VType>
-bool cas::CasDelete<VType>::Traverse() {
-  node_ = *root_;
+bool cas::CasDelete<VType>::Traverse(cas::Node** root) {
+  node_ = *root;
   parent_ = nullptr;
   grand_parent_ = nullptr;
   parent_byte_ = 0;

@@ -31,7 +31,8 @@ class CasDelete {
     void Dump();
   };
 
-  Node** root_;
+  Node** root_main_;
+  Node** root_auxiliary_;
   Node* node_;
   Node* parent_;
   Node* grand_parent_;
@@ -43,14 +44,15 @@ private:
     bool is_main_index_;
 
 public:
-  CasDelete(Node** root, const BinaryKey& key);
+  CasDelete(Node** root_main, Node** root_auxiliary, const BinaryKey& key);
 
   bool Execute();
-  void LazyDeletion();
-  void StrictDeletion();
+  bool Execute(Node** root);
+  void LazyDeletion(Node** root);
+  void StrictDeletion(Node** root);
 
 private:
-  bool Traverse();
+  bool Traverse(Node** root);
   void DeleteDID(std::vector<did_t>& v, cas::did_t did);
 };
 
