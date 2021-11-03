@@ -141,8 +141,14 @@ void cas::Cas<VType>::Insert(const cas::BinaryKey& /*bkey*/) {
 
 
 template<class VType>
-void cas::Cas<VType>::Delete(const cas::BinaryKey& bkey) {
-  cas::CasDelete<VType> deleter{&root_, &auxiliary_index_, bkey};
+void cas::Cas<VType>::Delete(
+    const cas::BinaryKey& bkey,
+    cas::InsertType deletion_method) {
+  cas::CasDelete<VType> deleter{
+    &root_,
+    &auxiliary_index_,
+    bkey,
+    deletion_method};
   deleter.Execute();
 }
 

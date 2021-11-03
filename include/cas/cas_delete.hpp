@@ -39,12 +39,17 @@ class CasDelete {
   uint8_t parent_byte_; // byte from parent to node
   uint8_t grand_parent_byte_; // byte from grand_parent to parent
   const BinaryKey& key_;
+  const cas::InsertType deletion_method_;
 
 private:
     bool is_main_index_;
 
 public:
-  CasDelete(Node** root_main, Node** root_auxiliary, const BinaryKey& key);
+  CasDelete(
+      Node** root_main,
+      Node** root_auxiliary,
+      const BinaryKey& key,
+      cas::InsertType deletion_method = cas::InsertType::LazyFast);
 
   bool Execute();
   bool Execute(Node** root);
