@@ -27,11 +27,19 @@ public:
     return true;
   }
 
+  inline bool IsUnderfilled() {
+    return false;
+  }
+
   void Put(uint8_t key_byte, Node *child);
 
   Node* LocateChild(uint8_t key_byte);
 
   inline Node* Grow() {
+    return nullptr;
+  }
+
+  inline Node* Shrink() {
     return nullptr;
   }
 

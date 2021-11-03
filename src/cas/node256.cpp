@@ -1,4 +1,5 @@
 #include "cas/node256.hpp"
+#include "cas/node48.hpp"
 #include <cassert>
 #include <iostream>
 
@@ -22,13 +23,13 @@ void cas::Node256::Put(uint8_t key_byte, Node* child) {
 void cas::Node256::DeleteNode(uint8_t key_byte) {
   if (nr_children_ == 0) {
     // TODO
-    std::cout<<"** You cannot delete from empty node 256**"<<std::endl;
+    std::cout << "** You cannot delete from empty node 256** "<< std::endl;
     exit(-1);
   }
   //If key does not exists, it is error
-  if(children_[key_byte] == nullptr){
+  if (children_[key_byte] == nullptr) {
     // TODO
-    std::cout<<"** You cannot delete non existing node 256**"<<std::endl;
+    std::cout << "** You cannot delete non existing node from Node256**" << std::endl;
     exit(-1);
   }
 
@@ -59,8 +60,32 @@ cas::Node* cas::Node256::Grow() {
 }
 
 
+cas::Node* cas::Node256::Shrink() {
+  assert(nr_children_ == 48);
+  cas::Node48* node48 = new cas::Node48(type_);
+  node48->nr_children_ = 48;
+  node48->separator_pos_ = separator_pos_;
+  node48->prefix_ = std::move(prefix_);
+  int pos = 0;
+  for (int i = 0; i < 256; ++i) {
+    node48->indexes_[i] = cas::kEmptyIndex;
+    if (children_[i] != nullptr){
+      node48->indexes_[i] = static_cast<uint8_t>(pos);
+      node48->children_[pos] = children_[i];
+      ++pos;
+    }
+  }
+  return node48;
+}
+
+
 bool cas::Node256::IsFull() {
   return nr_children_ >= 256;
+}
+
+
+bool cas::Node256::IsUnderfilled() {
+  return nr_children_ <= 48;
 }
 
 

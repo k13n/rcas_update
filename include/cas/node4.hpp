@@ -15,12 +15,15 @@ public:
   Node4(NodeType type);
 
   bool IsFull();
+  bool IsUnderfilled();
 
   void Put(uint8_t key_byte, Node* child);
 
   Node* LocateChild(uint8_t key_byte);
 
   Node* Grow();
+
+  Node* Shrink();
 
   void ReplaceBytePointer(uint8_t key_byte, Node* child);
 

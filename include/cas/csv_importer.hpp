@@ -15,7 +15,7 @@ class CsvImporter {
   char delimiter_;
 
 public:
-  CsvImporter(Index<VType>& index, char delimiter_ = ' ');
+  CsvImporter(Index<VType>& index, const char delimiter_ = ' ');
 
   void Load(std::string filename, cas::InsertType insertTypeMain, cas::InsertType insertTypeAux);
 

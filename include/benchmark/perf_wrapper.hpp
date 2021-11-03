@@ -38,7 +38,8 @@ struct PerfWrapper {
             /* "--event", "cache-references,cache-misses", */
             /* "--event", "instructions,cache-misses", */
             /* "--event", "task-clock,instructions,cycles,cache-references,cache-misses", */
-            "--event", "task-clock,instructions,cycles,cache-references,cache-misses,branch-instructions,branch-misses",
+            /* "--event", "task-clock,instructions,cycles,cache-references,cache-misses,branch-instructions,branch-misses", */
+            "--event", "task-clock,instructions,cycles,L1-dcache-loads,L1-dcache-load-misses,cache-references,cache-misses",
             "--output", filename.c_str(),
             "-g",
             "--pid", pid_s.str().c_str(),

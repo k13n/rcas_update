@@ -10,6 +10,7 @@ add_library(cas
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/utils.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/binary_key.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/cas.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/cas/cas_delete.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/cas_insert.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/cas_seq.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/csv_importer.cpp

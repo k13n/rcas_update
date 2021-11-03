@@ -1,4 +1,5 @@
 #include "cas/node48.hpp"
+#include "cas/node16.hpp"
 #include "cas/node256.hpp"
 #include <cassert>
 #include <iostream>
@@ -29,13 +30,13 @@ void cas::Node48::Put(uint8_t key_byte, Node* child) {
 void cas::Node48::DeleteNode(uint8_t key_byte) {
   if (nr_children_ == 0) {
     // TODO
-    std::cout<<"** You cannot delete from empty node 48**"<<std::endl;
+    std::cout << "** You cannot delete from empty Node48**" << std::endl;
     exit(-1);
   }
   //If key does not exists, it is error
   if(indexes_[key_byte] == kEmptyIndex){
     // TODO
-    std::cout<<"** You cannot delete non existing node 48**"<<std::endl;
+    std::cout << "** You cannot delete non existing node from Node48**" << std::endl;
     exit(-1);
   }
   uint8_t pos = indexes_[key_byte];
@@ -44,10 +45,10 @@ void cas::Node48::DeleteNode(uint8_t key_byte) {
   std::memmove(children_+pos, children_+pos+1, (48-pos)*sizeof(uintptr_t));
 
   //all indexes that are greater that pos should be reduced by 1 since on position pos we removed child
-  for(int i = 0; i < 256; i++){
-      if(indexes_[i] != kEmptyIndex && indexes_[i] > pos){
-          indexes_[i] = indexes_[i] - 1;
-      }
+  for (int i = 0; i < 256; i++) {
+    if (indexes_[i] != kEmptyIndex && indexes_[i] > pos) {
+      indexes_[i] = indexes_[i] - 1;
+    }
   }
 
   //set rest to 0, but it is already regulated with the nur_children when we do a insert
@@ -90,8 +91,31 @@ cas::Node* cas::Node48::Grow() {
 }
 
 
+cas::Node* cas::Node48::Shrink() {
+  assert(nr_children_ == 16);
+  cas::Node16* node16 = new cas::Node16(type_);
+  node16->nr_children_ = 16;
+  node16->separator_pos_ = separator_pos_;
+  node16->prefix_ = std::move(prefix_);
+  int pos = 0;
+  for (int i = 0; i < 256; ++i) {
+    if (indexes_[i] != cas::kEmptyIndex) {
+      node16->keys_[pos] = indexes_[i];
+      node16->children_[pos] = children_[indexes_[i]];
+      ++pos;
+    }
+  }
+  return node16;
+}
+
+
 bool cas::Node48::IsFull() {
   return nr_children_ >= 48;
+}
+
+
+bool cas::Node48::IsUnderfilled() {
+  return nr_children_ <= 16;
 }
 
 

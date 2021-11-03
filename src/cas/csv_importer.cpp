@@ -8,10 +8,10 @@
 
 
 template<class VType>
-cas::CsvImporter<VType>::CsvImporter(cas::Index<VType>& index, char delimiter)
-    : index_(index),
-    delimiter_(delimiter) {
-}
+cas::CsvImporter<VType>::CsvImporter(cas::Index<VType>& index, const char delimiter)
+    : index_(index)
+    , delimiter_(delimiter)
+{ }
 
 
 template<class VType>

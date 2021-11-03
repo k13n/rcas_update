@@ -30,7 +30,7 @@ void cas::Node4::Put(uint8_t key_byte, Node* child) {
 void cas::Node4::DeleteNode(uint8_t key_byte) {
   if (nr_children_ == 0) {
     // TODO
-    std::cout<<"** You cannot delete from empty node 4**"<<std::endl;
+    std::cout << "** You cannot delete from empty Node4**" << std::endl;
     exit(-1);
   }
   int pos = 0;
@@ -38,9 +38,9 @@ void cas::Node4::DeleteNode(uint8_t key_byte) {
     ++pos;
   }
   //If key does not exists, it is error
-  if(pos == nr_children_) {
+  if (pos == nr_children_) {
     // TODO
-    std::cout<<"** You cannot delete non existing node 4**"<<std::endl;
+    std::cout << "** You cannot delete non existing node from Node4**" << std::endl;
     exit(-1);
   }
   --nr_children_;
@@ -82,6 +82,13 @@ cas::Node* cas::Node4::Grow() {
 }
 
 
+cas::Node* cas::Node4::Shrink() {
+  std::cerr << "Calling Shrink on Node4" << std::endl;
+  exit(-1);
+  return nullptr;
+}
+
+
 void cas::Node4::ReplaceBytePointer(uint8_t key_byte, cas::Node* child) {
   for (int i = 0; i < nr_children_; ++i) {
     if (keys_[i] == key_byte) {
@@ -105,6 +112,11 @@ void cas::Node4::ForEachChild(uint8_t low, uint8_t high,
 
 bool cas::Node4::IsFull() {
   return nr_children_ >= 4;
+}
+
+
+bool cas::Node4::IsUnderfilled() {
+  return nr_children_ <= 1;
 }
 
 

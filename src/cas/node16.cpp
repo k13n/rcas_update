@@ -1,5 +1,6 @@
 #include "cas/node16.hpp"
 #include "cas/node48.hpp"
+#include "cas/node4.hpp"
 #include <cassert>
 #include <iostream>
 
@@ -31,7 +32,7 @@ void cas::Node16::Put(uint8_t key_byte, Node* child) {
 void cas::Node16::DeleteNode(uint8_t key_byte) {
   if (nr_children_ == 0) {
     // TODO
-    std::cout<<"** You cannot delete from empty node 16**"<<std::endl;
+    std::cout << "** You cannot delete from empty Node16**" << std::endl;
     exit(-1);
   }
   int pos = 0;
@@ -39,9 +40,9 @@ void cas::Node16::DeleteNode(uint8_t key_byte) {
     ++pos;
   }
   //If key does not exists, it is error
-  if(pos == nr_children_) {
+  if (pos == nr_children_) {
     // TODO
-    std::cout<<"** You cannot delete non existing node 16**"<<std::endl;
+    std::cout << "** You cannot delete non existing node from Node16**" << std::endl;
     exit(-1);
   }
   --nr_children_;
@@ -86,6 +87,20 @@ cas::Node* cas::Node16::Grow() {
 }
 
 
+cas::Node* cas::Node16::Shrink() {
+  assert(nr_children_ == 4);
+  cas::Node4* node4 = new cas::Node4(type_);
+  node4->nr_children_ = 4;
+  node4->separator_pos_ = separator_pos_;
+  node4->prefix_ = std::move(prefix_);
+  for (int i = 0; i < nr_children_; ++i) {
+    node4->keys_[i] = keys_[i];
+  }
+  std::memcpy(node4->children_, children_, 4*sizeof(uintptr_t));
+  return node4;
+}
+
+
 void cas::Node16::ReplaceBytePointer(uint8_t key_byte, cas::Node* child) {
   for (int i = 0; i < nr_children_; ++i) {
     if (keys_[i] == key_byte) {
@@ -110,6 +125,12 @@ void cas::Node16::ForEachChild(uint8_t low, uint8_t high,
 bool cas::Node16::IsFull() {
   return nr_children_ >= 16;
 }
+
+
+bool cas::Node16::IsUnderfilled() {
+  return nr_children_ <= 4;
+}
+
 
 
 size_t cas::Node16::SizeBytes() {

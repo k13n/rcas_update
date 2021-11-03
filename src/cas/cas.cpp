@@ -5,6 +5,7 @@
 #include "cas/prefix_matcher.hpp"
 #include "cas/interleaved_key.hpp"
 #include "cas/interleaver.hpp"
+#include "cas/cas_delete.hpp"
 #include "cas/cas_insert.hpp"
 #include "cas/query.hpp"
 #include "cas/search_key.hpp"
@@ -134,8 +135,15 @@ cas::QueryStats cas::Cas<VType>::Insert(
 
 
 template<class VType>
-void cas::Cas<VType>::Insert(cas::BinaryKey& /*bkey*/) {
+void cas::Cas<VType>::Insert(const cas::BinaryKey& /*bkey*/) {
   // TODO
+}
+
+
+template<class VType>
+void cas::Cas<VType>::Delete(const cas::BinaryKey& bkey) {
+  cas::CasDelete<VType> deleter{&root_, bkey};
+  deleter.Execute();
 }
 
 

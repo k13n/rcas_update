@@ -98,8 +98,10 @@ def execute
   system "make"
   Dir.chdir "#{__dir__}/.."
 
-  bulkload_percents = [0.6, 0.7, 0.8, 0.9, 1.0]
-  methods = [0, 1, 2, 3]
+  # bulkload_percents = [0.6, 0.7, 0.8, 0.9, 1.0]
+  # methods = [0, 1, 2, 3]
+  bulkload_percents = [0.6, 1.0]
+  methods = [0]
 
   bulkload_percents.each do |bulkload_percent|
     methods.each do |method|

@@ -41,7 +41,9 @@ public:
       cas::InsertTarget insert_target = cas::InsertTarget::MainAuxiliary
   );
 
-  void Insert(BinaryKey& bkey);
+  void Insert(const BinaryKey& bkey);
+
+  void Delete(const BinaryKey& bkey);
 
   uint64_t BulkLoad(std::deque<Key<VType>>& keys);
 

@@ -40,6 +40,7 @@ public:
   NodeType Type();
 
   virtual bool IsFull() = 0;
+  virtual bool IsUnderfilled() = 0;
 
   /**
    * Assumes key_byte is not yet present in node
@@ -49,6 +50,8 @@ public:
   virtual Node* LocateChild(uint8_t key_byte) = 0;
 
   virtual Node* Grow() = 0;
+
+  virtual Node* Shrink() = 0;
 
   virtual void ReplaceBytePointer(uint8_t key_byte, Node* child) = 0;
 
