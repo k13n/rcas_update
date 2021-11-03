@@ -35,7 +35,7 @@ cas::CasInsert<VType>::CasInsert(cas::Node* root,
 {}
 
 template<class VType>
-bool cas::CasInsert<VType>::Execute(cas::Node*& root_node, cas::InsertType insertType, cas::Node*& root_node_sec) {
+bool cas::CasInsert<VType>::Execute(cas::Node*& root_node, cas::UpdateType insertType, cas::Node*& root_node_sec) {
   if (root_node == nullptr) {
     root_node = new Node0();
     cas::Node0 * currNode = static_cast<Node0 *>(root_node);
@@ -209,10 +209,10 @@ bool cas::CasInsert<VType>::Execute(cas::Node*& root_node, cas::InsertType inser
     // Case when we are in the auxiliary index. We will first regularly add the key with the Insertion Case 3 in the auxiliary index and then check if we have reached the threshold and if we have then we will just merge main and auxiliary index
     else{
 
-      if(insertType == cas::InsertType::StrictSlow){
+      if(insertType == cas::UpdateType::StrictSlow){
         StrictSlowInsertion(s, next_node_qpos_, next_node_vl_pos_);
       }
-      else if(insertType == cas::InsertType::LazyFast){
+      else if(insertType == cas::UpdateType::LazyFast){
         LazyFastInsertion(s, next_node_qpos_, next_node_vl_pos_);
       }
 

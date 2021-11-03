@@ -17,7 +17,7 @@ add_library(cas
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/interleaved_key.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/interleaver.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/interleaving_score.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/cas/insert_type.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/cas/update_type.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/insertion_helper.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/key_encoder.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cas/locator.cpp

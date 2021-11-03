@@ -10,7 +10,7 @@
 #include "cas/node.hpp"
 #include "cas/surrogate.hpp"
 #include "cas/insertion_helper.hpp"
-#include "cas/insert_type.hpp"
+#include "cas/update_type.hpp"
 #include <vector>
 #include <stack>
 
@@ -36,15 +36,15 @@ public:
   ~Cas();
 
   cas::QueryStats Insert(Key<VType>& key,
-      cas::InsertType insertTypeMain,
-      cas::InsertType insertTypeAux,
+      cas::UpdateType insertTypeMain,
+      cas::UpdateType insertTypeAux,
       cas::InsertTarget insert_target = cas::InsertTarget::MainAuxiliary
   );
 
   void Insert(const BinaryKey& bkey);
 
   void Delete(const BinaryKey& bkey,
-      cas::InsertType update_type = cas::InsertType::LazyFast);
+      cas::UpdateType update_type = cas::UpdateType::LazyFast);
 
   uint64_t BulkLoad(std::deque<Key<VType>>& keys);
 

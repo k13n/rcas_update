@@ -24,8 +24,8 @@ public:
   ~CasSeq();
 
   cas::QueryStats Insert(Key<VType>& key,
-      cas::InsertType insertTypeMain,
-      cas::InsertType insertTypeAux,
+      cas::UpdateType insertTypeMain,
+      cas::UpdateType insertTypeAux,
       cas::InsertTarget insert_target = cas::InsertTarget::MainAuxiliary
   );
 

@@ -8,7 +8,7 @@
 #include "cas/search_key.hpp"
 #include "cas/index.hpp"
 #include "binary_key.hpp"
-#include "insert_type.hpp"
+#include "update_type.hpp"
 
 #include <deque>
 #include <stack>
@@ -61,7 +61,7 @@ public:
       bool isMain,
       cas::MergeMethod merge_method = cas::MergeMethod::Slow);
 
-  bool Execute(cas::Node*& root_node, cas::InsertType insertType, cas::Node*& root_node_sec);
+  bool Execute(cas::Node*& root_node, cas::UpdateType insertType, cas::Node*& root_node_sec);
 
   const QueryStats& Stats() const {
     return stats_;

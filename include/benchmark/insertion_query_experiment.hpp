@@ -4,7 +4,7 @@
 #include "cas/index.hpp"
 #include "cas/cas.hpp"
 #include "cas/search_key.hpp"
-#include "cas/insert_type.hpp"
+#include "cas/update_type.hpp"
 
 
 namespace benchmark {

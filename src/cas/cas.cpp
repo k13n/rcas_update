@@ -59,8 +59,8 @@ void cas::Cas<VType>::DeleteNodesRecursively(cas::Node *node) {
 template<class VType>
 cas::QueryStats cas::Cas<VType>::Insert(
     cas::Key<VType>& key,
-    cas::InsertType insertTypeMain,
-    cas::InsertType insertTypeAux,
+    cas::UpdateType insertTypeMain,
+    cas::UpdateType insertTypeAux,
     cas::InsertTarget insert_target
   ) {
   // TODO
@@ -143,7 +143,7 @@ void cas::Cas<VType>::Insert(const cas::BinaryKey& /*bkey*/) {
 template<class VType>
 void cas::Cas<VType>::Delete(
     const cas::BinaryKey& bkey,
-    cas::InsertType deletion_method) {
+    cas::UpdateType deletion_method) {
   cas::CasDelete<VType> deleter{
     &root_,
     &auxiliary_index_,

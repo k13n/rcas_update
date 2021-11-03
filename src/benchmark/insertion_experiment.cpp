@@ -73,7 +73,7 @@ void benchmark::InsertionExperiment<VType>::RunIndex(cas::Index<VType>& index) {
    counter ++;
    cas::Key<VType> key = importer.ProcessLine(line);
    //***In Insert method setting of insertTypes for main and auxiliary index is possible***
-   cas::QueryStats single_stats = index.Insert(key, cas::InsertType::StrictSlow, cas::InsertType::StrictSlow);
+   cas::QueryStats single_stats = index.Insert(key, cas::UpdateType::StrictSlow, cas::UpdateType::StrictSlow);
    if(single_stats.runtime_mus_ != 0) {
        stats.push_back(single_stats);
    }

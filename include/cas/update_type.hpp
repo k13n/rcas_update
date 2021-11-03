@@ -1,5 +1,5 @@
-#ifndef CAS_INSERT_TYPE_H_
-#define CAS_INSERT_TYPE_H_
+#ifndef CAS_UPDATE_TYPE_H_
+#define CAS_UPDATE_TYPE_H_
 
 
 namespace cas {
@@ -9,7 +9,7 @@ enum class MergeMethod {
   Fast
 };
 
-enum InsertType {
+enum UpdateType {
   StrictSlow,
   LazyFast
 };
@@ -22,8 +22,8 @@ enum class InsertTarget {
 
 struct InsertMethod {
   cas::InsertTarget target_;
-  cas::InsertType main_insert_type_;
-  cas::InsertType aux_insert_type_;
+  cas::UpdateType main_insert_type_;
+  cas::UpdateType aux_insert_type_;
 };
 
 inline bool operator==(const InsertMethod& lhs, const InsertMethod& rhs) {
@@ -41,27 +41,27 @@ int MergeMethodToInt(const MergeMethod& method);
 
 constexpr InsertMethod MainSS = {
   cas::InsertTarget::MainOnly,
-  cas::InsertType::StrictSlow,
-  cas::InsertType::StrictSlow
+  cas::UpdateType::StrictSlow,
+  cas::UpdateType::StrictSlow
 };
 constexpr InsertMethod MainLF = {
   cas::InsertTarget::MainOnly,
-  cas::InsertType::LazyFast,
-  cas::InsertType::LazyFast
+  cas::UpdateType::LazyFast,
+  cas::UpdateType::LazyFast
 };
 constexpr InsertMethod MainAuxLF = {
   cas::InsertTarget::MainAuxiliary,
-  cas::InsertType::LazyFast,
-  cas::InsertType::LazyFast
+  cas::UpdateType::LazyFast,
+  cas::UpdateType::LazyFast
 };
 constexpr InsertMethod MainAuxSS = {
   cas::InsertTarget::MainAuxiliary,
-  cas::InsertType::StrictSlow,
-  cas::InsertType::StrictSlow
+  cas::UpdateType::StrictSlow,
+  cas::UpdateType::StrictSlow
 };
 
 
 
 } // namespace cas
 
-#endif //CAS_INSERT_TYPE_H_
+#endif //CAS_UPDATE_TYPE_H_

@@ -1,4 +1,4 @@
-#include "cas/insert_type.hpp"
+#include "cas/update_type.hpp"
 #include <stdexcept>
 
 cas::InsertMethod cas::InsertMethodFromInt(int method) {

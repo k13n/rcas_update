@@ -73,8 +73,8 @@ void benchmark::InsertionQueryExperiment<VType>::RunIndex(cas::Index<VType>& ind
     cas::Key<VType> key = importer.ProcessLine(line);
 
     //***In Insert method setting of insertTypes for main and auxiliary index is possible***
-//    stats_insertion_time.push_back(index.Insert(key, cas::InsertType::StrictSlow, cas::InsertType::StrictSlow));
-    stats_insertion_time.push_back(index.Insert(key, cas::InsertType::LazyFast, cas::InsertType::LazyFast));
+//    stats_insertion_time.push_back(index.Insert(key, cas::UpdateType::StrictSlow, cas::UpdateType::StrictSlow));
+    stats_insertion_time.push_back(index.Insert(key, cas::UpdateType::LazyFast, cas::UpdateType::LazyFast));
   }
 
   results_insertion_time.push_back(cas::QueryStats::Avg(stats_insertion_time));

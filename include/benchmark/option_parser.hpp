@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <getopt.h>
-#include "cas/insert_type.hpp"
+#include "cas/update_type.hpp"
 
 
 namespace benchmark {

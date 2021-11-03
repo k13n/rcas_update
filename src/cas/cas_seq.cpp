@@ -22,8 +22,8 @@ cas::CasSeq<VType>::~CasSeq() {
 template<class VType>
 cas::QueryStats cas::CasSeq<VType>::Insert(
     cas::Key<VType>& key,
-    cas::InsertType insertTypeMain,
-    cas::InsertType insertTypeAux,
+    cas::UpdateType insertTypeMain,
+    cas::UpdateType insertTypeAux,
     cas::InsertTarget insert_target) {
   cas::KeyEncoder<VType> encoder;
   data_.push_back(encoder.Encode(key));
@@ -34,7 +34,7 @@ template<class VType>
 uint64_t cas::CasSeq<VType>::BulkLoad(std::deque<cas::Key<VType>>& keys) {
   const auto& t_start = std::chrono::high_resolution_clock::now();
   for (auto& key : keys) {
-    Insert(key, cas::InsertType::StrictSlow, cas::InsertType::StrictSlow);
+    Insert(key, cas::UpdateType::StrictSlow, cas::UpdateType::StrictSlow);
   }
   const auto& t_end = std::chrono::high_resolution_clock::now();
   return std::chrono::duration_cast<std::chrono::microseconds>(t_end-t_start).count();

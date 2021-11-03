@@ -3,7 +3,7 @@
 
 #include "cas/index.hpp"
 #include "cas/key.hpp"
-#include "cas/insert_type.hpp"
+#include "cas/update_type.hpp"
 
 namespace cas {
 
@@ -17,7 +17,7 @@ class CsvImporter {
 public:
   CsvImporter(Index<VType>& index, const char delimiter_ = ' ');
 
-  void Load(std::string filename, cas::InsertType insertTypeMain, cas::InsertType insertTypeAux);
+  void Load(std::string filename, cas::UpdateType insertTypeMain, cas::UpdateType insertTypeAux);
 
   uint64_t BulkLoad(std::string filename);
 

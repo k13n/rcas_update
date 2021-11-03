@@ -13,7 +13,7 @@ cas::CasDelete<VType>::CasDelete(
         cas::Node** root_main,
         cas::Node** root_auxiliary,
         const cas::BinaryKey& key,
-        cas::InsertType deletion_method)
+        cas::UpdateType deletion_method)
   : root_main_(root_main)
   , root_auxiliary_(root_auxiliary)
   , key_(key)
@@ -82,10 +82,10 @@ bool cas::CasDelete<VType>::Execute(cas::Node** root) {
   // Case 3: this is the difficult case; parent_ has only one child left
   // and these two nodes can be merged
   switch (deletion_method_) {
-    case cas::InsertType::LazyFast:
+    case cas::UpdateType::LazyFast:
       LazyDeletion(root);
       break;
-    case cas::InsertType::StrictSlow:
+    case cas::UpdateType::StrictSlow:
       StrictDeletion(root);
       break;
     default:

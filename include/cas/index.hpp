@@ -5,7 +5,7 @@
 #include "cas/search_key.hpp"
 #include "cas/query_stats.hpp"
 #include "cas/index_stats.hpp"
-#include "cas/insert_type.hpp"
+#include "cas/update_type.hpp"
 
 #include <functional>
 #include <deque>
@@ -40,8 +40,8 @@ public:
 
   virtual cas::QueryStats Insert(
       Key<VType>& key,
-      cas::InsertType insertTypeMain,
-      cas::InsertType insertTypeAux,
+      cas::UpdateType insertTypeMain,
+      cas::UpdateType insertTypeAux,
       cas::InsertTarget insert_target = cas::InsertTarget::MainAuxiliary
   ) = 0;
 

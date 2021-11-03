@@ -8,7 +8,7 @@
 #include "cas/search_key.hpp"
 #include "cas/index.hpp"
 #include "binary_key.hpp"
-#include "insert_type.hpp"
+#include "update_type.hpp"
 
 #include <deque>
 #include <stack>
@@ -39,7 +39,7 @@ class CasDelete {
   uint8_t parent_byte_; // byte from parent to node
   uint8_t grand_parent_byte_; // byte from grand_parent to parent
   const BinaryKey& key_;
-  const cas::InsertType deletion_method_;
+  const cas::UpdateType deletion_method_;
 
 private:
     bool is_main_index_;
@@ -49,7 +49,7 @@ public:
       Node** root_main,
       Node** root_auxiliary,
       const BinaryKey& key,
-      cas::InsertType deletion_method = cas::InsertType::LazyFast);
+      cas::UpdateType deletion_method = cas::UpdateType::LazyFast);
 
   bool Execute();
   bool Execute(Node** root);

@@ -38,7 +38,7 @@ TEST_CASE("Test Insertion interleaving", "[cas::Interleaver]") {
     importer.BulkLoad(dataset);
 
     dataset = "../../datasets/bom_insert_strictslow.csv";
-    importer.Load(dataset, cas::InsertType::StrictSlow, cas::InsertType::StrictSlow);
+    importer.Load(dataset, cas::UpdateType::StrictSlow, cas::UpdateType::StrictSlow);
 
     TraverseNodesRecursively(index.root_, ikeys);
 
@@ -191,7 +191,7 @@ TEST_CASE("Test Insertion interleaving", "[cas::Interleaver]") {
     importer.BulkLoad(dataset);
 
     dataset = "../../datasets/bom_insert_lazyfast.csv";
-    importer.Load(dataset, cas::InsertType::LazyFast, cas::InsertType::LazyFast);
+    importer.Load(dataset, cas::UpdateType::LazyFast, cas::UpdateType::LazyFast);
 
     TraverseNodesRecursively(index.root_, ikeys);
 

@@ -15,7 +15,7 @@ cas::CsvImporter<VType>::CsvImporter(cas::Index<VType>& index, const char delimi
 
 
 template<class VType>
-void cas::CsvImporter<VType>::Load(std::string filename, cas::InsertType insertTypeMain, cas::InsertType insertTypeAux) {
+void cas::CsvImporter<VType>::Load(std::string filename, cas::UpdateType insertTypeMain, cas::UpdateType insertTypeAux) {
   highest_did_ = 0;
   std::ifstream infile(filename);
   std::string line;
