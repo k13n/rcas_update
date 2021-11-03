@@ -47,6 +47,7 @@ public:
 
   bool Execute();
   void LazyDeletion();
+  void StrictDeletion();
 
 private:
   bool Traverse();

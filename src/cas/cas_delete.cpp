@@ -1,7 +1,10 @@
 #include "cas/cas_delete.hpp"
+#include "cas/bulk_load.hpp"
 #include "cas/node0.hpp"
+#include "cas/utils.hpp"
 #include <algorithm>
 #include <cassert>
+#include <deque>
 #include <iostream>
 
 
@@ -60,16 +63,16 @@ bool cas::CasDelete<VType>::Execute() {
     return true;
   }
 
-
   // Case 3: this is the difficult case; parent_ has only one child left
   // and these two nodes can be merged
-  LazyDeletion();
+  StrictDeletion();
+  /* LazyDeletion(); */
   return true;
 }
 
 
 // this method merges node parent_ with its only remaining
-// child node
+// child node in a lazy way
 template<class VType>
 void cas::CasDelete<VType>::LazyDeletion() {
   auto key_bytes = parent_->GetKeys();
@@ -122,6 +125,109 @@ void cas::CasDelete<VType>::LazyDeletion() {
   delete parent_;
 }
 
+
+// this method merges node parent_ with its only remaining
+// child node in a lazy way
+template<class VType>
+void cas::CasDelete<VType>::StrictDeletion() {
+  struct PartialKey {
+    cas::Node* node_;
+    std::vector<uint8_t> path_;
+    std::vector<uint8_t> value_;
+
+    void Dump() const {
+      std::cout << "Path: ";
+      cas::Utils::DumpHexValues(path_);
+      std::cout << "Value: ";
+      cas::Utils::DumpHexValues(value_);
+      std::cout << "\n";
+    }
+  };
+  std::deque<PartialKey> partial_key_stack;
+  std::deque<cas::BinaryKey> keys;
+
+  PartialKey root_pkey;
+  root_pkey.node_ = parent_;
+  std::copy(
+      parent_->prefix_.begin(),
+      parent_->prefix_.begin() + parent_->separator_pos_,
+      std::back_inserter(root_pkey.path_));
+  std::copy(
+      parent_->prefix_.begin() + parent_->separator_pos_,
+      parent_->prefix_.end(),
+      std::back_inserter(root_pkey.value_));
+  partial_key_stack.push_back(root_pkey);
+
+  // collect binary keys by recursively traversing the index
+  while (!partial_key_stack.empty()) {
+    auto pkey = partial_key_stack.back();
+    partial_key_stack.pop_back();
+    pkey.node_->ForEachChild([&](uint8_t next_byte, cas::Node& child) -> bool {
+      auto pkey_child = pkey;
+      pkey_child.node_ = &child;
+      if (pkey.node_->IsPathNode()) {
+        pkey_child.path_.push_back(next_byte);
+      } else {
+        pkey_child.value_.push_back(next_byte);
+      }
+      std::copy(
+          child.prefix_.begin(),
+          child.prefix_.begin() + child.separator_pos_,
+          std::back_inserter(pkey_child.path_));
+      std::copy(
+          child.prefix_.begin() + child.separator_pos_,
+          child.prefix_.end(),
+          std::back_inserter(pkey_child.value_));
+      partial_key_stack.push_back(pkey_child);
+      return true;
+    });
+    if (pkey.node_->IsLeaf()) {
+      cas::BinaryKey bkey;
+      auto* leaf = static_cast<cas::Node0*>(pkey.node_);
+      for (auto did : leaf->dids_) {
+        bkey.path_ = std::move(pkey.path_);
+        bkey.value_ = std::move(pkey.value_);
+        bkey.did_ = did;
+        keys.push_back(bkey);
+      }
+    }
+  }
+
+  // determine the dimension of the new subtree's root node
+  cas::NodeType root_dimension;
+  if (grand_parent_ == nullptr) {
+    root_dimension = parent_->type_;
+  } else {
+    root_dimension = grand_parent_->IsPathNode()
+      ? cas::NodeType::Value
+      : cas::NodeType::Path;
+  }
+  cas::BulkLoad bulk_loader{keys, root_dimension};
+  cas::Node* new_parent = bulk_loader.Execute();
+
+  // install new_parent in the tree
+  if (grand_parent_ == nullptr) {
+    // parent_ is the root node
+    *root_ = new_parent;
+  } else {
+    // replace parent_ with new_parent in grand_parent_'s
+    // list of children
+    grand_parent_->ReplaceBytePointer(grand_parent_byte_, new_parent);
+  }
+
+  // delete old subtree recursively
+  std::function<void(cas::Node*)> DeleteSubtree = [&DeleteSubtree](cas::Node *node) {
+    if (node == nullptr) {
+      return;
+    }
+    node->ForEachChild([&](uint8_t, cas::Node& child) -> bool {
+      DeleteSubtree(&child);
+      return true;
+    });
+    delete node;
+  };
+  DeleteSubtree(parent_);
+}
 
 
 template<class VType>
