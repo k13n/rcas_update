@@ -16,8 +16,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_subdirectory(src)
 add_subdirectory(tests)
 
-add_executable(benchmark_cache_misses ${CMAKE_CURRENT_SOURCE_DIR}/apps/benchmark_cache_misses.cpp)
-target_link_libraries(benchmark_cache_misses cas)
+add_executable(benchmark_cache_misses1 ${CMAKE_CURRENT_SOURCE_DIR}/apps/benchmark_cache_misses1.cpp)
+target_link_libraries(benchmark_cache_misses1 cas)
+
+add_executable(benchmark_cache_misses2 ${CMAKE_CURRENT_SOURCE_DIR}/apps/benchmark_cache_misses2.cpp)
+target_link_libraries(benchmark_cache_misses2 cas)
 
 add_executable(benchmark_merge_query ${CMAKE_CURRENT_SOURCE_DIR}/apps/benchmark_merge_query.cpp)
 target_link_libraries(benchmark_merge_query cas)

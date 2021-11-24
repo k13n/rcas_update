@@ -1,5 +1,5 @@
-#ifndef BENCHMARK_DELETION_EXPERIMENT_H_
-#define BENCHMARK_DELETION_EXPERIMENT_H_
+#ifndef BENCHMARK_DELETION_QUERY_EXPERIMENT_H_
+#define BENCHMARK_DELETION_QUERY_EXPERIMENT_H_
 
 #include "cas/index.hpp"
 #include "cas/cas.hpp"
@@ -11,26 +11,33 @@ namespace benchmark {
 
 
 template<class VType>
-class DeletionExperiment {
+class DeletionQueryExperiment {
 private:
   const std::string dataset_filename_;
   const char dataset_delim_;
   const std::vector<cas::InsertMethod>& insert_methods_;
+  std::vector<cas::SearchKey<VType>> queries_;
   std::vector<cas::QueryStats> results_;
+  double percent_query_;
   double percent_bulkload_;
+  const std::string perf_datafile_;
 
 public:
-  DeletionExperiment(
+  DeletionQueryExperiment(
       const std::string dataset_filename_,
       const char dataset_delim,
       const std::vector<cas::InsertMethod>& insert_methods,
-      double percent_bulkload
+      std::vector<cas::SearchKey<VType>> queries,
+      double percent_query,
+      double percent_bulkload,
+      const std::string perf_datafile
   );
 
   void Run();
 
   void RunIndex(cas::Cas<VType>& index,
-      const cas::InsertMethod& insert_method);
+      const cas::InsertMethod& insert_method,
+      int nr_repetitions);
 
   void PrintOutput();
 };
@@ -39,4 +46,4 @@ public:
 }; // namespace benchmark
 
 
-#endif // BENCHMARK_DELETION_EXPERIMENT_H_
+#endif // BENCHMARK_QUERY_DELETION_EXPERIMENT_H_

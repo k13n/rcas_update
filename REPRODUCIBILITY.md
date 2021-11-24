@@ -96,18 +96,32 @@ following files:
 - `mainaux_sr.csv`
 
 
-### Query Performance Experiment
+### Insertion Query Performance Experiment
 
 Execute the following command:
 
 ```bash
-ruby scripts/benchmark_querying.rb \
+ruby scripts/benchmarks_insertion_querying.rb \
   --input_file $INPUT_FILE \
-  --output_folder experiments/benchmark_querying \
-  > experiments/benchmark_querying/summary.txt
+  --output_folder experiments/benchmarks_insertion_querying \
+  > experiments/exp_insertion_querying/summary.txt
 ```
 
-The results are stored in the file: `experiments/exp_querying/summary.txt`
+The results are stored in the file: `experiments/exp_insertion_querying/summary.txt`
+
+
+### Deletion Query Performance Experiment
+
+Execute the following command:
+
+```bash
+ruby scripts/benchmarks_deletion_querying.rb \
+  --input_file $INPUT_FILE \
+  --output_folder experiments/benchmarks_deletion_querying \
+  > experiments/exp_deletion_querying/summary.txt
+```
+
+The results are stored in the file: `experiments/exp_deletion_querying/summary.txt`
 
 
 ### Merge Experiment

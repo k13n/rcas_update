@@ -1,4 +1,4 @@
-#include "benchmark/insertion_query_experiment2.hpp"
+#include "benchmark/deletion_query_experiment.hpp"
 #include "benchmark/runtime_experiment.hpp"
 #include "benchmark/perf_wrapper.hpp"
 #include "cas/cas.hpp"
@@ -12,11 +12,12 @@
 
 
 template<class VType>
-benchmark::InsertionQueryExperiment2<VType>::InsertionQueryExperiment2(
+benchmark::DeletionQueryExperiment<VType>::DeletionQueryExperiment(
       const std::string dataset_filename_,
       const char dataset_delim,
       const std::vector<cas::InsertMethod>& insert_methods,
       std::vector<cas::SearchKey<VType>> queries,
+      double percent_query,
       double percent_bulkload,
       const std::string perf_datafile
       )
@@ -24,6 +25,7 @@ benchmark::InsertionQueryExperiment2<VType>::InsertionQueryExperiment2(
   , dataset_delim_(dataset_delim)
   , insert_methods_(insert_methods)
   , queries_(queries)
+  , percent_query_(percent_query)
   , percent_bulkload_(percent_bulkload)
   , perf_datafile_(perf_datafile)
 {
@@ -31,8 +33,8 @@ benchmark::InsertionQueryExperiment2<VType>::InsertionQueryExperiment2(
 
 
 template<class VType>
-void benchmark::InsertionQueryExperiment2<VType>::Run() {
-  std::cout << "InsertionQuery experiment: " << std::endl;
+void benchmark::DeletionQueryExperiment<VType>::Run() {
+  std::cout << "DeletionQuery experiment: " << std::endl;
   std::cout << std::endl;
 
   /* int nr_repetitions = 1000; */
@@ -53,7 +55,7 @@ void benchmark::InsertionQueryExperiment2<VType>::Run() {
 
 
 template<class VType>
-void benchmark::InsertionQueryExperiment2<VType>::RunIndex(
+void benchmark::DeletionQueryExperiment<VType>::RunIndex(
     cas::Cas<VType>& index,
     const cas::InsertMethod& insert_method,
     int nr_repetitions) {
@@ -62,7 +64,7 @@ void benchmark::InsertionQueryExperiment2<VType>::RunIndex(
 
   std::deque<cas::Key<VType>> keys_all;
   std::deque<cas::Key<VType>> keys_to_bulkload;
-  std::deque<cas::Key<VType>> keys_to_insert;
+  std::deque<cas::Key<VType>> keys_to_delete;
 
   std::ifstream infile(dataset_filename_);
   std::string line;
@@ -70,36 +72,33 @@ void benchmark::InsertionQueryExperiment2<VType>::RunIndex(
     keys_all.push_back(importer.ProcessLine(line));
   }
 
+  size_t nr_keys_to_query    = static_cast<size_t>(percent_query_ * keys_all.size());
   size_t nr_keys_to_bulkload = static_cast<size_t>(percent_bulkload_ * keys_all.size());
-  size_t nr_keys_to_insert   = keys_all.size() - nr_keys_to_bulkload;
+  size_t nr_keys_to_delete   = nr_keys_to_bulkload - nr_keys_to_query;
   while (keys_to_bulkload.size() < nr_keys_to_bulkload) {
     keys_to_bulkload.push_back(keys_all.front());
-    keys_all.pop_front();
-  }
-  while (!keys_all.empty()) {
-    keys_to_insert.push_back(keys_all.front());
+    if (keys_to_delete.size() < nr_keys_to_delete) {
+      keys_to_delete.push_back(keys_all.front());
+    }
     keys_all.pop_front();
   }
 
-  std::cout << "keys bulk-loaded (percent): " << percent_bulkload_ << "\n";
-  std::cout << "keys bulk-loaded: " << nr_keys_to_bulkload << "\n";
-  std::cout << "keys inserted:    " << nr_keys_to_insert << "\n";
+  std::cout << "keys to bulk-load (percent): " << percent_bulkload_ << "\n";
+  std::cout << "keys to bulk-load: " << nr_keys_to_bulkload << "\n";
+  std::cout << "keys to delete:    " << nr_keys_to_delete << "\n";
   std::cout << "\n\n";
 
   // bulk-load fraction of the index
   index.BulkLoad(keys_to_bulkload);
+
   // point insertions for the remaining fraction
-  std::vector<cas::QueryStats> stats_insertion_time;
-  while (!keys_to_insert.empty()) {
-    const auto retval = index.Insert(keys_to_insert.front(),
-        insert_method.main_insert_type_,
-        insert_method.aux_insert_type_,
-        insert_method.target_
-    );
-    stats_insertion_time.push_back(retval);
-    keys_to_insert.pop_front();
+  while (!keys_to_delete.empty()) {
+    bool success = index.Delete(keys_to_delete.front(), insert_method.main_insert_type_);
+    if (!success) {
+      throw std::runtime_error{"could not delete a key"};
+    }
+    keys_to_delete.pop_front();
   }
-  results_insertion_time.push_back(cas::QueryStats::Avg(stats_insertion_time));
 
   index.Describe();
   std::cout << std::endl;
@@ -130,18 +129,7 @@ void benchmark::InsertionQueryExperiment2<VType>::RunIndex(
 
 
 template<class VType>
-void benchmark::InsertionQueryExperiment2<VType>::PrintOutput() {
-  /// Print of the average insert time in the main and aux index
-  std::cout<<"Average insert time in the Main and Aux index:"<<std::endl;
-  for (size_t col = 0; col < insert_methods_.size(); ++col) {
-    const auto& result = results_insertion_time[col];
-    double runtime_main_ms = result.runtime_main_mus_ / 1000.0;
-    double runtime_aux_ms = result.runtime_aux_mus_ / 1000.0;
-    std::cout << "-Main index: " << runtime_main_ms << std::endl;
-    std::cout << "-Aux index: " << runtime_aux_ms << std::endl;
-  }
-  std::cout << std::endl;
-
+void benchmark::DeletionQueryExperiment<VType>::PrintOutput() {
   for (size_t row = 0; row < queries_.size(); ++row) {
     std::cout << "q" << row << ":" << std::endl;
     for (size_t col = 0; col < insert_methods_.size(); ++col) {
@@ -190,6 +178,6 @@ void benchmark::InsertionQueryExperiment2<VType>::PrintOutput() {
 }
 
 // explicit instantiations to separate header from implementation
-template class benchmark::InsertionQueryExperiment2<cas::vint32_t>;
-template class benchmark::InsertionQueryExperiment2<cas::vint64_t>;
-template class benchmark::InsertionQueryExperiment2<cas::vstring_t>;
+template class benchmark::DeletionQueryExperiment<cas::vint32_t>;
+template class benchmark::DeletionQueryExperiment<cas::vint64_t>;
+template class benchmark::DeletionQueryExperiment<cas::vstring_t>;

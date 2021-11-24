@@ -11,6 +11,7 @@ namespace benchmark {
 struct Config {
   std::string input_filename_ = "";
   char dataset_delim_ = ';';
+  double percent_query_ = 0.6;
   double percent_bulkload_ = 1.0;
   cas::InsertMethod insert_method_ = cas::MainLF;
   cas::MergeMethod merge_method_ = cas::MergeMethod::Fast;
@@ -52,12 +53,14 @@ void ParseDouble(
 void Parse(int argc, char** argv, benchmark::Config& config) {
   const int OPT_INPUT_FILENAME = 1;
   const int OPT_BULKLOAD_PERCENT = 2;
-  const int OPT_INSERT_METHOD = 3;
-  const int OPT_MERGE_METHOD = 4;
-  const int OPT_PERF_DATAFILE = 5;
+  const int OPT_QUERY_PERCENT = 3;
+  const int OPT_INSERT_METHOD = 4;
+  const int OPT_MERGE_METHOD = 5;
+  const int OPT_PERF_DATAFILE = 6;
   static struct option long_options[] = {
     {"input_filename",    required_argument, nullptr, OPT_INPUT_FILENAME},
     {"bulkload_percent",  required_argument, nullptr, OPT_BULKLOAD_PERCENT},
+    {"query_percent",     required_argument, nullptr, OPT_QUERY_PERCENT},
     {"insert_method",     required_argument, nullptr, OPT_INSERT_METHOD},
     {"merge_method",      required_argument, nullptr, OPT_MERGE_METHOD},
     {"perf_datafile",     required_argument, nullptr, OPT_PERF_DATAFILE},
@@ -78,6 +81,13 @@ void Parse(int argc, char** argv, benchmark::Config& config) {
       case OPT_BULKLOAD_PERCENT:
         ParseDouble(optarg, config.percent_bulkload_ , long_options[option_index].name);
         if (!(0 <= config.percent_bulkload_ && config.percent_bulkload_ <= 1)) {
+          std::cerr << "--bulkload_percent must be between 0 and 1";
+          exit(-1);
+        }
+        break;
+      case OPT_QUERY_PERCENT:
+        ParseDouble(optarg, config.percent_query_ , long_options[option_index].name);
+        if (!(0 <= config.percent_query_ && config.percent_query_ <= 1)) {
           std::cerr << "--bulkload_percent must be between 0 and 1";
           exit(-1);
         }

@@ -17,7 +17,7 @@ end
 
 
 def execute_benchmark(bulkload_percent, method)
-  system "./release/benchmark_cache_misses \
+  system "./release/benchmark_cache_misses1 \
     --input_filename='#{INPUT_FILE}' \
     --bulkload_percent=#{bulkload_percent} \
     --insert_method=#{method} \
