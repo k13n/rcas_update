@@ -343,7 +343,7 @@ void cas::Node::DumpLatex(Node* parent, uint8_t edge_label, int indent,
       std::cout << "l";
       break;
     }
-    printf("%c", parent->type_ == Path ? 'p' : 'v');
+    printf("%c", parent->type_ == cas::NodeType::Path ? 'p' : 'v');
     std::cout << "node,";
   }
   std::cout << std::endl;

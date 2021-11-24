@@ -59,6 +59,8 @@ public:
 private:
   bool Traverse(Node** root);
   void DeleteDID(std::vector<did_t>& v, cas::did_t did);
+  void PerformPrefixPullup();
+  NodeType Alternate(NodeType type);
 };
 
 } // namespace cas

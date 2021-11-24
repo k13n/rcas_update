@@ -1,4 +1,5 @@
 #include "cas/cas_delete.hpp"
+#include "cas/node_type.hpp"
 #include "cas/bulk_load.hpp"
 #include "cas/node0.hpp"
 #include "cas/utils.hpp"
@@ -75,6 +76,8 @@ bool cas::CasDelete<VType>::Execute(cas::Node** root) {
         grand_parent_->ReplaceBytePointer(grand_parent_byte_, new_parent);
       }
       delete parent_;
+      parent_ = new_parent;
+      PerformPrefixPullup();
     }
     return true;
   }
@@ -92,6 +95,98 @@ bool cas::CasDelete<VType>::Execute(cas::Node** root) {
       break;
   }
   return true;
+}
+
+
+template<class VType>
+void cas::CasDelete<VType>::PerformPrefixPullup() {
+  // there can only be a common prefix in the alternate dimension
+  cas::NodeType dimension = Alternate(parent_->type_);
+
+  // compute common prefix in the alternate dimension
+  bool first = true;
+  uint8_t* ref_prefix = nullptr;
+  size_t ref_prefix_len = 0;
+  size_t dsc = 0;
+  parent_->ForEachChild([&](uint8_t /* byte */, cas::Node& child) -> bool {
+    uint8_t* prefix = child.Prefix(dimension);
+    size_t prefix_len = child.PrefixLen(dimension);
+    if (first) {
+      first = false;
+      ref_prefix = prefix;
+      ref_prefix_len = prefix_len;
+      dsc = ref_prefix_len;
+    } else {
+      size_t i = 0;
+      while (i < dsc && i < prefix_len && ref_prefix[i] == prefix[i]) {
+        ++i;
+      }
+      dsc = i;
+    }
+    return true;
+  });
+
+  // check if there is no common prefix
+  if (dsc == 0) {
+    return;
+  }
+
+  // add common prefix to the parent node's prefix
+  std::vector<uint8_t> parent_prefix;
+  std::copy(
+      parent_->prefix_.begin(),
+      parent_->prefix_.begin() + parent_->separator_pos_,
+      std::back_inserter(parent_prefix));
+  if (dimension == cas::NodeType::Path) {
+    std::copy(ref_prefix, ref_prefix + dsc, std::back_inserter(parent_prefix));
+  }
+  size_t parent_separator_pos = parent_prefix.size();
+  std::copy(
+      parent_->prefix_.begin() + parent_->separator_pos_,
+      parent_->prefix_.end(),
+      std::back_inserter(parent_prefix));
+  if (dimension == cas::NodeType::Value) {
+    std::copy(ref_prefix, ref_prefix + dsc, std::back_inserter(parent_prefix));
+  }
+  parent_->prefix_ = parent_prefix;
+  parent_->separator_pos_ = parent_separator_pos;
+
+  // remove common prefix from the children
+  parent_->ForEachChild([&](uint8_t /* byte */, cas::Node& child) -> bool {
+    std::vector<uint8_t> prefix;
+    auto path_begin = child.prefix_.begin();
+    if (dimension == cas::NodeType::Path) {
+      path_begin = path_begin + dsc;
+    }
+    std::copy(
+        path_begin,
+        child.prefix_.begin() + child.separator_pos_,
+        std::back_inserter(prefix));
+    size_t separator_pos = prefix.size();
+    auto value_begin = child.prefix_.begin() + child.separator_pos_;
+    if (dimension == cas::NodeType::Value) {
+      value_begin = value_begin + dsc;
+    }
+    std::copy(
+        value_begin,
+        child.prefix_.end(),
+        std::back_inserter(prefix));
+    child.prefix_ = prefix;
+    child.separator_pos_ = separator_pos;
+    return true;
+  });
+}
+
+
+template<class VType>
+cas::NodeType cas::CasDelete<VType>::Alternate(cas::NodeType type) {
+  switch (type) {
+    case cas::NodeType::Path:  return cas::NodeType::Value;
+    case cas::NodeType::Value: return cas::NodeType::Path;
+    case cas::NodeType::Leaf:
+      throw std::runtime_error{"invalid node type"};
+  }
+  return cas::NodeType::Leaf;
 }
 
 

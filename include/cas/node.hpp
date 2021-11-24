@@ -86,6 +86,34 @@ public:
 
   virtual void DeleteNode(uint8_t key_byte) = 0;
 
+  uint8_t* Path() {
+    return &prefix_[0];
+  }
+
+  uint8_t* Value() {
+    return &prefix_[separator_pos_];
+  }
+
+  uint8_t* Prefix(NodeType type) {
+    switch (type) {
+      case cas::NodeType::Path:  return Path();
+      case cas::NodeType::Value: return Value();
+      case cas::NodeType::Leaf:
+        throw std::runtime_error{"invalid node type"};
+    }
+    return nullptr;
+  }
+
+  size_t PrefixLen(NodeType type) {
+    switch (type) {
+      case cas::NodeType::Path:  return PathPrefixSize();
+      case cas::NodeType::Value: return ValuePrefixSize();
+      case cas::NodeType::Leaf:
+        throw std::runtime_error{"invalid node type"};
+    }
+    return 0;
+  }
+
 protected:
   void DumpBuffer(uint8_t *buffer, size_t length);
 

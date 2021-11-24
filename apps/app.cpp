@@ -12,9 +12,9 @@
 #include <fstream>
 #include <cmath>
 
-void Run() {
+void BomExample1() {
   using VType = cas::vint64_t;
-  std::cout << "Insertion experiment: " << std::endl;
+  std::cout << "Deletion example: " << std::endl;
   std::cout << std::endl;
 
   cas::Cas<VType> index{cas::IndexType::TwoDimensional, {}};
@@ -23,7 +23,7 @@ void Run() {
   std::deque<cas::Key<VType>> keys_all;
   std::deque<cas::Key<VType>> keys_all_cpy;
 
-  std::string dataset_filename_ = "../datasets/bom.csv";
+  std::string dataset_filename_ = "../datasets/bom1.csv";
   std::ifstream infile(dataset_filename_);
   std::string line;
   while (std::getline(infile, line)) {
@@ -96,10 +96,44 @@ void Run() {
 }
 
 
+void BomExample2() {
+  using VType = cas::vint64_t;
+  std::cout << "Deletion example: " << std::endl;
+  std::cout << std::endl;
 
-int main(int argc, char** argv) {
-  Run();
-  /* benchmark::Config config = benchmark::option_parser::Parse(argc, argv); */
-  /* Benchmark(config); */
+  cas::Cas<VType> index{cas::IndexType::TwoDimensional, {}};
+  cas::CsvImporter<VType> importer(index, ';');
+
+  std::deque<cas::Key<VType>> keys_all;
+  std::deque<cas::Key<VType>> keys_all_cpy;
+
+  std::string dataset_filename_ = "../datasets/bom2.csv";
+  std::ifstream infile(dataset_filename_);
+  std::string line;
+  while (std::getline(infile, line)) {
+    keys_all.push_back(importer.ProcessLine(line));
+  }
+
+  keys_all_cpy = keys_all;
+  index.BulkLoad(keys_all);
+
+  std::cout << "index before deletion:\n";
+  index.DumpConcise();
+
+  cas::KeyEncoder<VType> encoder;
+
+  auto bkey = encoder.Encode(keys_all_cpy[1]);
+  std::cout << "Key to delete:\n";
+  bkey.Dump();
+  std::cout << "\n";
+  index.Delete(bkey);
+  std::cout << "index after deletion:\n";
+  index.DumpConcise();
+}
+
+
+int main(int /* argc */, char** /* argv */) {
+  BomExample1();
+  BomExample2();
   return 0;
 }
