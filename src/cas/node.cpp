@@ -184,7 +184,10 @@ void cas::Node::DumpConcise(uint8_t edge_label, int indent) {
   std::cout << "cap(" << prefix_.capacity();
   if (IsLeaf()) {
     cas::Node0* self = static_cast<cas::Node0*>(this);
-    std::cout << ";" << self->dids_.capacity() << "*" << sizeof(cas::did_t);
+    std::cout << ";";
+    for (const auto& did : self->dids_) {
+      std::cout << " " << did;
+    }
   }
   std::cout << ")";
   std::cout << std::endl;

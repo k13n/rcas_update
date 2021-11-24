@@ -100,7 +100,7 @@ cas::Node* cas::Node48::Shrink() {
   int pos = 0;
   for (int i = 0; i < 256; ++i) {
     if (indexes_[i] != cas::kEmptyIndex) {
-      node16->keys_[pos] = indexes_[i];
+      node16->keys_[pos] = static_cast<uint8_t>(i);
       node16->children_[pos] = children_[indexes_[i]];
       ++pos;
     }

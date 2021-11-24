@@ -44,6 +44,7 @@ add_library(cas
   ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/query_experiment.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/insertion_experiment.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/insertion_experiment2.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/deletion_experiment.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/insertion_query_experiment.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/insertion_query_experiment2.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/merge_query_experiment.cpp

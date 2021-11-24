@@ -69,7 +69,7 @@ cd ..
 
 The following scripts take two parameters:
 
-- `--input_filename`: This is the full path to the input dataset
+- `--input_file`: This is the full path to the input dataset
 - `--output_folder`: This is the full path to folder where the output files are
   written to.
 
@@ -83,7 +83,7 @@ Execute the following command. The results are stored in the file:
 
 ```bash
 ruby scripts/benchmark_insertion.rb \
-  --input_filename $INPUT_FILE \
+  --input_file $INPUT_FILE \
   --output_folder experiments/exp_insertions
 ```
 
@@ -102,7 +102,7 @@ Execute the following command:
 
 ```bash
 ruby scripts/benchmark_querying.rb \
-  --input_filename $INPUT_FILE \
+  --input_file $INPUT_FILE \
   --output_folder experiments/benchmark_querying \
   > experiments/benchmark_querying/summary.txt
 ```
@@ -116,7 +116,7 @@ Execute the following command:
 
 ```bash
 ruby scripts/benchmark_merging.rb \
-  --input_filename $INPUT_FILE \
+  --input_file $INPUT_FILE \
   --output_folder experiments/benchmark_merging \
   > experiments/benchmark_merging/summary.txt
 ```

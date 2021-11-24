@@ -141,7 +141,17 @@ void cas::Cas<VType>::Insert(const cas::BinaryKey& /*bkey*/) {
 
 
 template<class VType>
-void cas::Cas<VType>::Delete(
+bool cas::Cas<VType>::Delete(
+    const cas::Key<VType>& key,
+    cas::UpdateType deletion_method) {
+  cas::KeyEncoder<VType> encoder;
+  cas::BinaryKey bkey = encoder.Encode(key);
+  return Delete(bkey, deletion_method);
+}
+
+
+template<class VType>
+bool cas::Cas<VType>::Delete(
     const cas::BinaryKey& bkey,
     cas::UpdateType deletion_method) {
   cas::CasDelete<VType> deleter{
@@ -149,7 +159,7 @@ void cas::Cas<VType>::Delete(
     &auxiliary_index_,
     bkey,
     deletion_method};
-  deleter.Execute();
+  return deleter.Execute();
 }
 
 

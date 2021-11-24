@@ -25,7 +25,7 @@ cas::CasDelete<VType>::CasDelete(
 template<class VType>
 bool cas::CasDelete<VType>::Execute() {
   bool success = Execute(root_main_);
-  if (!success) {
+  if (!success && *root_auxiliary_ != nullptr) {
     success = Execute(root_auxiliary_);
   }
   return success;
@@ -77,8 +77,8 @@ bool cas::CasDelete<VType>::Execute(cas::Node** root) {
       }
       delete parent_;
       parent_ = new_parent;
-      PerformPrefixPullup();
     }
+    PerformPrefixPullup();
     return true;
   }
 

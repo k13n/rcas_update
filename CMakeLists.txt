@@ -25,5 +25,8 @@ target_link_libraries(benchmark_merge_query cas)
 add_executable(benchmark_insertion ${CMAKE_CURRENT_SOURCE_DIR}/apps/benchmark_insertion.cpp)
 target_link_libraries(benchmark_insertion cas)
 
+add_executable(benchmark_deletion ${CMAKE_CURRENT_SOURCE_DIR}/apps/benchmark_deletion.cpp)
+target_link_libraries(benchmark_deletion cas)
+
 add_executable(app ${CMAKE_CURRENT_SOURCE_DIR}/apps/app.cpp)
 target_link_libraries(app cas)

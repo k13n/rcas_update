@@ -43,7 +43,10 @@ public:
 
   void Insert(const BinaryKey& bkey);
 
-  void Delete(const BinaryKey& bkey,
+  bool Delete(const Key<VType>& key,
+      cas::UpdateType update_type = cas::UpdateType::LazyFast);
+
+  bool Delete(const BinaryKey& bkey,
       cas::UpdateType update_type = cas::UpdateType::LazyFast);
 
   uint64_t BulkLoad(std::deque<Key<VType>>& keys);
