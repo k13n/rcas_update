@@ -75,11 +75,13 @@ void benchmark::DeletionQueryExperiment<VType>::RunIndex(
   size_t nr_keys_to_query    = static_cast<size_t>(percent_query_ * keys_all.size());
   size_t nr_keys_to_bulkload = static_cast<size_t>(percent_bulkload_ * keys_all.size());
   size_t nr_keys_to_delete   = nr_keys_to_bulkload - nr_keys_to_query;
+  while (keys_to_bulkload.size() < nr_keys_to_query) {
+    keys_to_bulkload.push_back(keys_all.front());
+    keys_all.pop_front();
+  }
   while (keys_to_bulkload.size() < nr_keys_to_bulkload) {
     keys_to_bulkload.push_back(keys_all.front());
-    if (keys_to_delete.size() < nr_keys_to_delete) {
-      keys_to_delete.push_back(keys_all.front());
-    }
+    keys_to_delete.push_back(keys_all.front());
     keys_all.pop_front();
   }
 

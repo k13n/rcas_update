@@ -67,27 +67,25 @@ def analyze_perf(bulkload_percent, method)
   task_clock          = measurements[0]
   instructions        = measurements[1]
   cycles              = measurements[2]
-  cache_references    = measurements[3]
-  cache_misses        = measurements[4]
-  branch_instructions = measurements[5]
-  branch_misses       = measurements[6]
+  l1_cache_references = measurements[3]
+  l1_cache_misses     = measurements[4]
+  cache_references    = measurements[5]
+  cache_misses        = measurements[6]
   instructions_per_cycle = instructions / cycles.to_f
   cache_miss_ratio = cache_misses / cache_references.to_f
-  branch_miss_ratio = branch_misses / branch_instructions.to_f
   puts [
     bulkload_percent,
     method,
     task_clock,
     instructions,
     cycles,
+    l1_cache_references,
+    l1_cache_misses,
     cache_references,
     cache_misses,
-    branch_instructions,
-    branch_misses,
     instructions_per_cycle,
     cache_miss_ratio,
     cache_miss_ratio * 100,
-    branch_miss_ratio,
   ].join(";")
 end
 
@@ -101,7 +99,7 @@ def execute
   bulkload_percents = [0.6, 0.7, 0.8, 0.9, 1.0]
   methods = [0, 1, 2, 3]
   # bulkload_percents = [0.6, 1.0]
-  # methods = [0]
+  # methods = [1]
 
   bulkload_percents.each do |bulkload_percent|
     methods.each do |method|
@@ -125,14 +123,13 @@ def execute
     "task_clock",
     "instructions",
     "cycles",
+    "L1-dcache-loads",
+    "L1-dcache-load-misses",
     "cache_references",
     "cache_misses",
-    "branch_instructions",
-    "branch_misses",
     "instructions_per_cycle",
     "cache_miss_ratio",
     "cache_miss_percent",
-    "branch_miss_ratio",
   ].join(";")
   methods.each do |method|
     bulkload_percents.each do |bulkload_percent|
