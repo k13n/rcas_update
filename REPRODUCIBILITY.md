@@ -96,6 +96,28 @@ following files:
 - `mainaux_sr.csv`
 
 
+### Deletion Speed Experiment
+
+Execute the following command. The results are stored in the file:
+`experiments/exp_deletions/summary.txt`
+
+```bash
+ruby scripts/benchmark_deletion.rb \
+  --input_file $INPUT_FILE \
+  --output_folder experiments/exp_deletion
+```
+
+The results are stored in the folder `experiments/exp_insertions` in the
+following files:
+
+- `main_lr.csv`
+- `main_sr.csv`
+- `mainaux_lr.csv`
+- `mainaux_sr.csv`
+
+
+
+
 ### Insertion Query Performance Experiment
 
 Execute the following command:
