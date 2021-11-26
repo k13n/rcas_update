@@ -101,9 +101,9 @@ following files:
 Execute the following command:
 
 ```bash
-ruby scripts/benchmarks_insertion_querying.rb \
+ruby scripts/benchmark_insertion_querying.rb \
   --input_file $INPUT_FILE \
-  --output_folder experiments/benchmarks_insertion_querying \
+  --output_folder experiments/exp_insertion_querying \
   > experiments/exp_insertion_querying/summary.txt
 ```
 
@@ -115,9 +115,9 @@ The results are stored in the file: `experiments/exp_insertion_querying/summary.
 Execute the following command:
 
 ```bash
-ruby scripts/benchmarks_deletion_querying.rb \
+ruby scripts/benchmark_deletion_querying.rb \
   --input_file $INPUT_FILE \
-  --output_folder experiments/benchmarks_deletion_querying \
+  --output_folder experiments/exp_deletion_querying \
   > experiments/exp_deletion_querying/summary.txt
 ```
 
@@ -131,8 +131,8 @@ Execute the following command:
 ```bash
 ruby scripts/benchmark_merging.rb \
   --input_file $INPUT_FILE \
-  --output_folder experiments/benchmark_merging \
-  > experiments/benchmark_merging/summary.txt
+  --output_folder experiments/exp_merging \
+  > experiments/exp_merging/summary.txt
 ```
 
 The results are stored in the file: `experiments/exp_merging/summary.txt`
