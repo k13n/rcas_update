@@ -37,8 +37,8 @@ void benchmark::DeletionQueryExperiment<VType>::Run() {
   std::cout << "DeletionQuery experiment: " << std::endl;
   std::cout << std::endl;
 
-  /* int nr_repetitions = 1000; */
-  int nr_repetitions = 100;
+  int nr_repetitions = 1000;
+  /* int nr_repetitions = 100; */
   for (const auto& approach : insert_methods_) {
     cas::Cas<VType> index{cas::IndexType::TwoDimensional, {}};
     RunIndex(index, approach, nr_repetitions);
