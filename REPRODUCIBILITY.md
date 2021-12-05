@@ -79,15 +79,15 @@ Change the value of these parameters as needed.
 ### Insertion Speed Experiment
 
 Execute the following command. The results are stored in the file:
-`experiments/exp_insertions/summary.txt`
+`experiments/exp_insertion/summary.txt`
 
 ```bash
 ruby scripts/benchmark_insertion.rb \
   --input_file $INPUT_FILE \
-  --output_folder experiments/exp_insertions
+  --output_folder experiments/exp_insertion
 ```
 
-The results are stored in the folder `experiments/exp_insertions` in the
+The results are stored in the folder `experiments/exp_insertion` in the
 following files:
 
 - `main_lr.csv`
@@ -107,7 +107,7 @@ ruby scripts/benchmark_deletion.rb \
   --output_folder experiments/exp_deletion
 ```
 
-The results are stored in the folder `experiments/exp_insertions` in the
+The results are stored in the folder `experiments/exp_insertion` in the
 following files:
 
 - `main_lr.csv`

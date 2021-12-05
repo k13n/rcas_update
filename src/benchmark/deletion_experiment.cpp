@@ -11,6 +11,7 @@
 #include <chrono>
 #include <fstream>
 #include <cmath>
+#include <random>
 
 
 template<class VType>
@@ -51,6 +52,7 @@ void benchmark::DeletionExperiment<VType>::RunIndex(
   std::deque<cas::Key<VType>> keys_all;
   std::deque<cas::Key<VType>> keys_to_bulkload;
   std::deque<cas::Key<VType>> keys_to_insert;
+  std::deque<cas::Key<VType>> keys_to_delete;
 
   std::ifstream infile(dataset_filename_);
   std::string line;
@@ -60,6 +62,7 @@ void benchmark::DeletionExperiment<VType>::RunIndex(
 
   size_t nr_keys_to_bulkload = static_cast<size_t>(percent_bulkload_ * keys_all.size());
   size_t nr_keys_to_insert   = keys_all.size() - nr_keys_to_bulkload;
+  size_t nr_keys_to_delete   = nr_keys_to_insert;
 
   while (keys_to_bulkload.size() < nr_keys_to_bulkload) {
     keys_to_bulkload.push_back(keys_all.front());
@@ -68,6 +71,19 @@ void benchmark::DeletionExperiment<VType>::RunIndex(
   while (!keys_all.empty()) {
     keys_to_insert.push_back(keys_all.front());
     keys_all.pop_front();
+  }
+  keys_all.clear();
+  keys_all.resize(0);
+
+  size_t keys_from_bulk = 0;
+  size_t keys_from_insert = 0;
+  std::mt19937_64 rng;
+  std::uniform_real_distribution<double> unif{0, 1};
+  while (keys_to_delete.size() < nr_keys_to_delete) {
+    auto& key = unif(rng) <= percent_bulkload_
+      ? keys_to_bulkload[keys_from_bulk++]
+      : keys_to_insert[keys_from_insert++];
+    keys_to_delete.push_back(key);
   }
 
   std::cout << "keys to bulk-load (percent): " << percent_bulkload_ << "\n";
@@ -95,7 +111,7 @@ void benchmark::DeletionExperiment<VType>::RunIndex(
 
   // mesure deletion runtimes
   auto t1 = std::chrono::high_resolution_clock::now();
-  for (auto& key : keys_to_insert) {
+  for (auto& key : keys_to_delete) {
     auto start = std::chrono::high_resolution_clock::now();
     bool success = index.Delete(key, insert_method.main_insert_type_);
     if (!success) {
@@ -104,7 +120,6 @@ void benchmark::DeletionExperiment<VType>::RunIndex(
     auto end = std::chrono::high_resolution_clock::now();
     auto runtime = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
     deletion_times.push_back(runtime);
-    keys_to_insert.pop_front();
   }
   auto t2 = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2-t1).count();
