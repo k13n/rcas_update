@@ -9,6 +9,7 @@
 #include <iostream>
 #include <chrono>
 #include <fstream>
+#include <random>
 
 
 template<class VType>
@@ -64,6 +65,7 @@ void benchmark::DeletionQueryExperiment<VType>::RunIndex(
 
   std::deque<cas::Key<VType>> keys_all;
   std::deque<cas::Key<VType>> keys_to_bulkload;
+  std::deque<cas::Key<VType>> keys_to_insert;
   std::deque<cas::Key<VType>> keys_to_delete;
 
   std::ifstream infile(dataset_filename_);
@@ -73,27 +75,54 @@ void benchmark::DeletionQueryExperiment<VType>::RunIndex(
   }
 
   size_t nr_keys_to_query    = static_cast<size_t>(percent_query_ * keys_all.size());
-  size_t nr_keys_to_bulkload = static_cast<size_t>(percent_bulkload_ * keys_all.size());
-  size_t nr_keys_to_delete   = nr_keys_to_bulkload - nr_keys_to_query;
-  while (keys_to_bulkload.size() < nr_keys_to_query) {
+  size_t nr_total_keys       = static_cast<size_t>(percent_bulkload_ * keys_all.size());
+  size_t nr_keys_to_bulkload = nr_keys_to_query;
+  size_t nr_keys_to_insert   = nr_total_keys - nr_keys_to_query;
+  size_t nr_keys_to_delete   = nr_keys_to_insert;
+
+  while (keys_to_bulkload.size() < nr_keys_to_bulkload) {
     keys_to_bulkload.push_back(keys_all.front());
     keys_all.pop_front();
   }
-  while (keys_to_bulkload.size() < nr_keys_to_bulkload) {
-    keys_to_bulkload.push_back(keys_all.front());
-    keys_to_delete.push_back(keys_all.front());
+  while (keys_to_insert.size() < nr_keys_to_insert) {
+    keys_to_insert.push_back(keys_all.front());
     keys_all.pop_front();
+  }
+  keys_all.clear();
+  keys_all.resize(0);
+
+  size_t keys_from_bulk = 0;
+  size_t keys_from_insert = 0;
+  std::mt19937_64 rng;
+  std::uniform_real_distribution<double> unif{0, 1};
+  double fraction_bulk = nr_keys_to_bulkload / static_cast<double>(nr_total_keys);
+  while (keys_to_delete.size() < nr_keys_to_delete) {
+    auto& key = unif(rng) <= fraction_bulk
+      ? keys_to_bulkload[keys_from_bulk++]
+      : keys_to_insert[keys_from_insert++];
+    keys_to_delete.push_back(key);
   }
 
   std::cout << "keys to bulk-load (percent): " << percent_bulkload_ << "\n";
+  std::cout << "keys total:        " << nr_total_keys << "\n";
   std::cout << "keys to bulk-load: " << nr_keys_to_bulkload << "\n";
-  std::cout << "keys to delete:    " << nr_keys_to_delete << "\n";
+  std::cout << "keys to insert:    " << nr_keys_to_insert << "\n";
+  std::cout << "keys to delete:    " << nr_keys_to_insert << "\n";
   std::cout << "\n\n";
 
   // bulk-load fraction of the index
   index.BulkLoad(keys_to_bulkload);
 
-  // point insertions for the remaining fraction
+  // perform point insertions
+  for (auto& key : keys_to_insert) {
+    index.Insert(key,
+        insert_method.main_insert_type_,
+        insert_method.aux_insert_type_,
+        insert_method.target_
+    );
+  }
+
+  // perform point deletions
   while (!keys_to_delete.empty()) {
     bool success = index.Delete(keys_to_delete.front(), insert_method.main_insert_type_);
     if (!success) {
